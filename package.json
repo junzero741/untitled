@@ -1,0 +1,21 @@
+{
+  "name": "bulletin-board-monorepo",
+  "version": "0.1.0",
+  "description": "Web-based Bulletin Board with Next.js and Nest.js",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.12",
+    "typescript": "^5.3.3"
+  }
+}
