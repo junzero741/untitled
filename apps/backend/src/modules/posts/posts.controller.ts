@@ -48,10 +48,7 @@ export class PostsController {
         body.content,
       )
 
-      return {
-        message: 'Post created successfully',
-        post,
-      }
+        return post
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       throw new BadRequestException(message)
@@ -72,10 +69,7 @@ export class PostsController {
 
       const result = await this.postsService.findAll(pageNum, limitNum)
 
-      return {
-        message: 'Posts retrieved successfully',
-        ...result,
-      }
+      return result
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       throw new BadRequestException(message)
@@ -94,10 +88,7 @@ export class PostsController {
         throw new BadRequestException('Post not found')
       }
 
-      return {
-        message: 'Post retrieved successfully',
-        post,
-      }
+        return post
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       throw new BadRequestException(message)
@@ -123,10 +114,7 @@ export class PostsController {
         limitNum,
       )
 
-      return {
-        message: 'Posts retrieved successfully',
-        ...result,
-      }
+        return result
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       throw new BadRequestException(message)
@@ -160,10 +148,7 @@ export class PostsController {
       )
     }
 
-    return {
-      message: 'Post updated successfully',
-      post,
-    }
+      return post
   }
 
   /**
@@ -181,8 +166,6 @@ export class PostsController {
       )
     }
 
-    return {
-      message: 'Post deleted successfully',
-    }
+      return { success: true }
   }
 }

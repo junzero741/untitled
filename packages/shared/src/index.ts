@@ -1,13 +1,6 @@
 // Shared types and interfaces for the bulletin board application
 
-export interface Post {
-  id: string
-  title: string
-  content: string
-  author: string
-  createdAt: Date
-  updatedAt: Date
-}
+export * from './api.types'
 
 export interface User {
   id: string

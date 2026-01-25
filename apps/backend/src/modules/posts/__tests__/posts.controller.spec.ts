@@ -67,8 +67,7 @@ describe('PostsController', () => {
         body.title,
         body.content,
       )
-      expect(result.message).toBe('Post created successfully')
-      expect(result.post).toEqual(mockPost)
+        expect(result).toEqual(mockPost)
     })
 
     it('should throw BadRequestException when title or content is missing', async () => {
@@ -86,8 +85,8 @@ describe('PostsController', () => {
       const page = '1'
       const limit = '10'
       const mockResponse = {
-        data: [mockPost],
-        total: 1,
+          posts: [mockPost],
+          totalCount: 1,
         page: 1,
         limit: 10,
         totalPages: 1,
@@ -98,8 +97,7 @@ describe('PostsController', () => {
       const result = await controller.findAll(page, limit)
 
       expect(mockPostsService.findAll).toHaveBeenCalledWith(1, 10)
-      expect(result.message).toBe('Posts retrieved successfully')
-      expect(result.data).toEqual([mockPost])
+        expect(result).toEqual(mockResponse)
     })
   })
 
@@ -110,8 +108,7 @@ describe('PostsController', () => {
       const result = await controller.findOne(mockPost.id)
 
       expect(mockPostsService.findById).toHaveBeenCalledWith(mockPost.id)
-      expect(result.message).toBe('Post retrieved successfully')
-      expect(result.post).toEqual(mockPost)
+      expect(result).toEqual(mockPost)
     })
 
     it('should throw BadRequestException when post not found', async () => {
@@ -129,8 +126,8 @@ describe('PostsController', () => {
       const page = '1'
       const limit = '10'
       const mockResponse = {
-        data: [mockPost],
-        total: 1,
+          posts: [mockPost],
+          totalCount: 1,
         page: 1,
         limit: 10,
         totalPages: 1,
@@ -141,8 +138,7 @@ describe('PostsController', () => {
       const result = await controller.findByAuthor(authorId, page, limit)
 
       expect(mockPostsService.findByAuthorId).toHaveBeenCalledWith(authorId, 1, 10)
-      expect(result.message).toBe('Posts retrieved successfully')
-      expect(result.data).toEqual([mockPost])
+        expect(result).toEqual(mockResponse)
     })
   })
 
@@ -162,8 +158,7 @@ describe('PostsController', () => {
         body.title,
         body.content,
       )
-      expect(result.message).toBe('Post updated successfully')
-      expect(result.post).toEqual(updatedPost)
+        expect(result).toEqual(updatedPost)
     })
 
     it('should throw ForbiddenException when not authorized', async () => {
@@ -190,7 +185,7 @@ describe('PostsController', () => {
         mockPost.id,
         mockAuthor.id,
       )
-      expect(result.message).toBe('Post deleted successfully')
+        expect(result).toEqual({ success: true })
     })
 
     it('should throw ForbiddenException when not authorized', async () => {

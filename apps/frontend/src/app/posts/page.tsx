@@ -1,53 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  views: number;
-  createdAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import { usePosts } from '@/hooks';
 
 export default function PostsPage() {
   const router = useRouter();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  useEffect(() => {
-    fetchPosts();
-  }, [page]);
-
-  const fetchPosts = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`http://localhost:3001/posts?page=${page}&limit=10`);
-
-      if (!response.ok) {
-        throw new Error('게시글 목록을 불러오는데 실패했습니다.');
-      }
-
-      const data = await response.json();
-      setPosts(data.posts);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글 목록을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { posts, totalPages, isLoading, error, page, setPage } = usePosts({ limit: 10 });
 
   const handleCreatePost = () => {
     const token = localStorage.getItem('token');

@@ -3,66 +3,45 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: {
-    id: string;
-  };
-}
+import { usePost } from '@/hooks';
 
 export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
 
+  const { post, isLoading } = usePost(postId);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchPost();
-  }, [postId]);
-
-  const fetchPost = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
+    if (post) {
       const token = localStorage.getItem('token');
       if (!token) {
         router.push('/login');
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`);
-
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.');
-      }
-
-      const data: Post = await response.json();
-
       // 작성자 확인
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (data.author.id !== payload.sub) {
-        alert('수정 권한이 없습니다.');
-        router.push(`/posts/${postId}`);
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (post.author.id !== payload.sub) {
+          alert('수정 권한이 없습니다.');
+          router.push(`/posts/${postId}`);
+          return;
+        }
+      } catch (err) {
+        console.error('토큰 파싱 실패:', err);
+        router.push('/login');
         return;
       }
 
-      setTitle(data.title);
-      setContent(data.content);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
+      setTitle(post.title);
+      setContent(post.content);
     }
-  };
+  }, [post, postId, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,17 +66,20 @@ export default function EditPostPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'}/posts/${postId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: title.trim(),
+            content: content.trim(),
+          }),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {

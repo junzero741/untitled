@@ -48,14 +48,14 @@ export class PostsService {
    * 게시글 목록 조회 (페이지네이션)
    */
   async findAll(page: number = 1, limit: number = 10): Promise<{
-    data: Post[]
-    total: number
+    posts: Post[]
+    totalCount: number
     page: number
     limit: number
     totalPages: number
   }> {
     const skip = (page - 1) * limit
-    const [data, total] = await this.postsRepository.findAndCount({
+    const [posts, totalCount] = await this.postsRepository.findAndCount({
       relations: ['author'],
       order: { createdAt: 'DESC' },
       skip,
@@ -63,11 +63,11 @@ export class PostsService {
     })
 
     return {
-      data,
-      total,
+      posts,
+      totalCount,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(totalCount / limit),
     }
   }
 
@@ -79,14 +79,14 @@ export class PostsService {
     page: number = 1,
     limit: number = 10,
   ): Promise<{
-    data: Post[]
-    total: number
+    posts: Post[]
+    totalCount: number
     page: number
     limit: number
     totalPages: number
   }> {
     const skip = (page - 1) * limit
-    const [data, total] = await this.postsRepository.findAndCount({
+    const [posts, totalCount] = await this.postsRepository.findAndCount({
       where: { authorId },
       relations: ['author'],
       order: { createdAt: 'DESC' },
@@ -95,11 +95,11 @@ export class PostsService {
     })
 
     return {
-      data,
-      total,
+      posts,
+      totalCount,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(totalCount / limit),
     }
   }
 

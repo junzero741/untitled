@@ -112,8 +112,8 @@ describe('PostsService', () => {
         skip: 0,
         take: 10,
       })
-      expect(result.data).toEqual([mockPost])
-      expect(result.total).toBe(1)
+        expect(result.posts).toEqual([mockPost])
+        expect(result.totalCount).toBe(1)
       expect(result.page).toBe(1)
       expect(result.totalPages).toBe(1)
     })
@@ -133,8 +133,8 @@ describe('PostsService', () => {
         skip: 0,
         take: 10,
       })
-      expect(result.data).toEqual([mockPost])
-      expect(result.total).toBe(1)
+        expect(result.posts).toEqual([mockPost])
+        expect(result.totalCount).toBe(1)
     })
   })
 

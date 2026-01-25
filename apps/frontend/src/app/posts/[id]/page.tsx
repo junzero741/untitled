@@ -3,28 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  views: number;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import { usePost } from '@/hooks';
 
 export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
 
-  const [post, setPost] = useState<Post | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { post, isLoading, error } = usePost(postId);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,29 +24,7 @@ export default function PostDetailPage() {
         console.error('토큰 파싱 실패:', err);
       }
     }
-
-    fetchPost();
-  }, [postId]);
-
-  const fetchPost = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`http://localhost:3001/posts/${postId}`);
-
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.');
-      }
-
-      const data = await response.json();
-      setPost(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, []);
 
   const handleDelete = async () => {
     if (!confirm('정말 삭제하시겠습니까?')) {
@@ -74,12 +38,15 @@ export default function PostDetailPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001'}/posts/${postId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error('게시글 삭제에 실패했습니다.');
