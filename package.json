@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Web-based Bulletin Board with Next.js and Nest.js",
   "private": true,
+  "packageManager": "pnpm@8.15.0",
   "workspaces": [
     "apps/*",
     "packages/*"

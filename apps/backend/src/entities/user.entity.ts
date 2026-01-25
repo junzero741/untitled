@@ -11,26 +11,26 @@ import { Post } from './post.entity'
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id!: string
 
   @Column({ type: 'varchar', length: 255, unique: true })
-  email: string
+  email!: string
 
   @Column({ type: 'varchar', length: 100, unique: true })
-  username: string
+  username!: string
 
   @Column({ type: 'varchar', length: 255 })
-  password: string
+  password!: string
 
   @Column({ type: 'text', nullable: true })
-  bio: string
+  bio?: string
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt!: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt!: Date
 
   @OneToMany(() => Post, (post) => post.author)
-  posts: Post[]
+  posts!: Post[]
 }

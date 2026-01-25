@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { User, Post } from './entities'
+import { AuthModule } from './modules/auth/auth.module'
+import { UsersModule } from './modules/users/users.module'
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { User, Post } from './entities'
       logging: process.env.NODE_ENV === 'development',
     }),
     TypeOrmModule.forFeature([User, Post]),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

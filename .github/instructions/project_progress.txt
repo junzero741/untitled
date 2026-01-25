@@ -12,11 +12,11 @@
   • Backend: Nest.js, PostgreSQL
 
 2. 현재 진행 단계
-• 단계: 기획 및 초기 설정 완료, 데이터베이스 설계 진행 중
+• 단계: 사용자 인증 기능 구현 완료
 
-• 진행률: 20%
+• 진행률: 30%
 
-• 주요 마일스톤: 데이터베이스 스키마 설계 완료
+• 주요 마일스톤: 로그인/회원가입 API 구현 완료
 
 3. 세부 작업 현황
 • [완료] 요구 사항 정의
@@ -33,7 +33,12 @@
   - TypeORM 설정 완료
   - 마이그레이션 환경 준비
 
-• [대기] 사용자 인증 기능 구현 (Login/Logout)
+• [완료] 사용자 인증 기능 구현 (Login/Logout)
+  - JWT 기반 인증 시스템
+  - bcryptjs를 이용한 비밀번호 해싱
+  - SignUp API (/auth/signup)
+  - Login API (/auth/login)
+  - JWT 검증 가드 및 전략 구현
 
 • [대기] WYSIWYG 에디터 구현 (Prosemirror)
 
