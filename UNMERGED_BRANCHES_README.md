@@ -29,7 +29,7 @@ To create all PRs at once using GitHub CLI:
 
 ```bash
 # Make sure you're in the repository directory
-cd /home/runner/work/untitled/untitled
+cd <your-repository-directory>
 
 # Run these commands one by one, or create a script
 gh pr create --base master --head 1 --title "Database Schema Design with TypeORM" --body "..."

@@ -20,13 +20,9 @@ This document provides information about branches that are not yet merged into `
 
 **GitHub CLI Command to Create PR:**
 ```bash
-gh pr create --base master --head 1 --title "Database Schema Design with TypeORM" --body "This PR implements the PostgreSQL database schema with User and Post entities using TypeORM.
-
-Changes include:
-- User entity with authentication fields
-- Post entity with content and metadata
-- TypeORM configuration and data source setup
-- DATABASE_SCHEMA.md documentation"
+gh pr create --base master --head 1 \
+  --title "Database Schema Design with TypeORM" \
+  --body "This PR implements the PostgreSQL database schema with User and Post entities using TypeORM. Changes include: User entity with authentication fields, Post entity with content and metadata, TypeORM configuration and data source setup, DATABASE_SCHEMA.md documentation"
 ```
 
 ---
@@ -47,17 +43,9 @@ Changes include:
 
 **GitHub CLI Command to Create PR:**
 ```bash
-gh pr create --base master --head feature/authentication --title "Implement User Authentication with JWT" --body "This PR implements user authentication functionality with JWT tokens.
-
-Features:
-- JWT-based authentication system
-- SignUp endpoint (/auth/signup)
-- Login endpoint (/auth/login)
-- Password hashing with bcryptjs
-- Authentication guards and strategies
-- Comprehensive test coverage
-
-This PR builds on the database schema design."
+gh pr create --base master --head feature/authentication \
+  --title "Implement User Authentication with JWT" \
+  --body "This PR implements user authentication functionality with JWT tokens. Features: JWT-based authentication system, SignUp endpoint (/auth/signup), Login endpoint (/auth/login), Password hashing with bcryptjs, Authentication guards and strategies, Comprehensive test coverage. This PR builds on the database schema design."
 ```
 
 ---
@@ -80,20 +68,9 @@ This PR builds on the database schema design."
 
 **GitHub CLI Command to Create PR:**
 ```bash
-gh pr create --base master --head feature/posts-crud --title "Implement Posts CRUD with Authentication" --body "This PR implements full CRUD functionality for posts with JWT authentication.
-
-Features:
-- Create post (POST /posts)
-- Read post (GET /posts/:id)
-- Read all posts (GET /posts) with pagination
-- Update post (PATCH /posts/:id)
-- Delete post (DELETE /posts/:id)
-- Get posts by author (GET /posts/author/:authorId)
-- View count tracking
-- Author-only edit/delete permissions
-- Type-safe implementation
-
-This PR builds on the authentication feature."
+gh pr create --base master --head feature/posts-crud \
+  --title "Implement Posts CRUD with Authentication" \
+  --body "This PR implements full CRUD functionality for posts with JWT authentication. Features: Create post (POST /posts), Read post (GET /posts/:id), Read all posts (GET /posts) with pagination, Update post (PATCH /posts/:id), Delete post (DELETE /posts/:id), Get posts by author (GET /posts/author/:authorId), View count tracking, Author-only edit/delete permissions, Type-safe implementation. This PR builds on the authentication feature."
 ```
 
 ---
@@ -117,21 +94,9 @@ This PR builds on the authentication feature."
 
 **GitHub CLI Command to Create PR:**
 ```bash
-gh pr create --base master --head feature/wysiwyg-editor --title "Implement WYSIWYG Editor with ProseMirror" --body "This PR implements a full-featured WYSIWYG editor using ProseMirror and creates the complete frontend UI.
-
-Features:
-- ProseMirror-based WYSIWYG editor component
-- Text formatting (bold, italic, code)
-- Headings (H1-H3)
-- Lists (ordered/unordered)
-- Undo/redo functionality
-- Post creation/editing pages
-- Post list and detail views
-- Login/signup UI
-- Next.js 16.1.4 and React 19.2.3 upgrade
-- CORS configuration for frontend-backend communication
-
-This PR builds on the posts CRUD feature."
+gh pr create --base master --head feature/wysiwyg-editor \
+  --title "Implement WYSIWYG Editor with ProseMirror" \
+  --body "This PR implements a full-featured WYSIWYG editor using ProseMirror and creates the complete frontend UI. Features: ProseMirror-based WYSIWYG editor component, Text formatting (bold, italic, code), Headings (H1-H3), Lists (ordered/unordered), Undo/redo functionality, Post creation/editing pages, Post list and detail views, Login/signup UI, Next.js 16.1.4 and React 19.2.3 upgrade, CORS configuration for frontend-backend communication. This PR builds on the posts CRUD feature."
 ```
 
 ---
@@ -149,13 +114,9 @@ This PR builds on the posts CRUD feature."
 
 **GitHub CLI Command to Create PR:**
 ```bash
-gh pr create --base master --head fix/posts-response-schema --title "Refactor Posts API Response Format and Extract Custom Hooks" --body "This PR refactors the posts API response format for better structure and extracts custom hooks for improved code organization.
-
-Changes:
-- Improved API response schema for posts endpoints
-- Extracted reusable custom hooks
-- Better separation of concerns
-- Cleaner frontend code structure"
+gh pr create --base master --head fix/posts-response-schema \
+  --title "Refactor Posts API Response Format and Extract Custom Hooks" \
+  --body "This PR refactors the posts API response format for better structure and extracts custom hooks for improved code organization. Changes: Improved API response schema for posts endpoints, Extracted reusable custom hooks, Better separation of concerns, Cleaner frontend code structure"
 ```
 
 ---
@@ -166,7 +127,7 @@ Changes:
 If you have GitHub CLI installed, run the commands provided above for each branch.
 
 ### Option 2: Using GitHub Web Interface
-1. Go to https://github.com/junzero741/untitled
+1. Go to your repository on GitHub (e.g., https://github.com/junzero741/untitled)
 2. Click on "Pull requests" tab
 3. Click "New pull request"
 4. Select `master` as base branch
