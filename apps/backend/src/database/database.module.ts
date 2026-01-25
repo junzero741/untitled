@@ -1,16 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { User, Post } from './entities'
+import { AppDataSource } from './data-source'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env.local', '.env'],
-    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -18,13 +11,12 @@ import { User, Post } from './entities'
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_NAME || 'bulletin_board',
-      entities: [User, Post],
+      entities: ['dist/**/*.entity.js'],
       synchronize: process.env.NODE_ENV === 'development',
       logging: process.env.NODE_ENV === 'development',
+      migrationsRun: true,
+      migrations: ['dist/database/migrations/*.js'],
     }),
-    TypeOrmModule.forFeature([User, Post]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class DatabaseModule {}
