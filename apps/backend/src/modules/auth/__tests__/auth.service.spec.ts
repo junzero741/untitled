@@ -5,8 +5,6 @@ import { JwtService } from '@nestjs/jwt'
 
 describe('AuthService', () => {
   let service: AuthService
-  let usersService: UsersService
-  let jwtService: JwtService
 
   const mockUser = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -36,8 +34,6 @@ describe('AuthService', () => {
     }).compile()
 
     service = module.get<AuthService>(AuthService)
-    usersService = module.get<UsersService>(UsersService)
-    jwtService = module.get<JwtService>(JwtService)
   })
 
   afterEach(() => {

@@ -1,15 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
 import { UsersService } from '../users.service'
-import { User } from '../../entities'
+import { User } from '../../../entities'
 import * as bcrypt from 'bcryptjs'
 
 jest.mock('bcryptjs')
 
 describe('UsersService', () => {
   let service: UsersService
-  let repository: Repository<User>
 
   const mockUser = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -19,6 +17,7 @@ describe('UsersService', () => {
     bio: 'Test bio',
     createdAt: new Date(),
     updatedAt: new Date(),
+    posts: [],
   }
 
   const mockRepository = {
@@ -40,7 +39,6 @@ describe('UsersService', () => {
     }).compile()
 
     service = module.get<UsersService>(UsersService)
-    repository = module.get<Repository<User>>(getRepositoryToken(User))
   })
 
   afterEach(() => {
@@ -113,7 +111,7 @@ describe('UsersService', () => {
 
   describe('validatePassword', () => {
     it('should return true if password matches', async () => {
-      ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true)
 
       const result = await service.validatePassword(
         mockUser,
@@ -128,7 +126,7 @@ describe('UsersService', () => {
     })
 
     it('should return false if password does not match', async () => {
-      ;(bcrypt.compare as jest.Mock).mockResolvedValue(false)
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false)
 
       const result = await service.validatePassword(
         mockUser,
@@ -147,7 +145,7 @@ describe('UsersService', () => {
         bio: newBio,
       })
 
-      const result = await service.updateProfile(mockUser.id, newBio)
+      await service.updateProfile(mockUser.id, newBio)
 
       expect(mockRepository.update).toHaveBeenCalledWith(mockUser.id, {
         bio: newBio,

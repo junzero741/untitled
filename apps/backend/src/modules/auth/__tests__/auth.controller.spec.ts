@@ -5,7 +5,6 @@ import { BadRequestException } from '@nestjs/common'
 
 describe('AuthController', () => {
   let controller: AuthController
-  let authService: AuthService
 
   const mockUser = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -25,7 +24,6 @@ describe('AuthController', () => {
     }).compile()
 
     controller = module.get<AuthController>(AuthController)
-    authService = module.get<AuthService>(AuthService)
   })
 
   afterEach(() => {
@@ -40,10 +38,7 @@ describe('AuthController', () => {
         password: 'password123',
       }
 
-      mockAuthService.signUp.mockResolvedValue({
-        id: mockUser.id,
-        ...signUpDto,
-      })
+      mockAuthService.signUp.mockResolvedValue(mockUser)
 
       const result = await controller.signUp(signUpDto)
 
@@ -53,7 +48,11 @@ describe('AuthController', () => {
         signUpDto.password,
       )
       expect(result.message).toBe('User created successfully')
-      expect(result.user).toEqual(mockUser)
+      expect(result.user).toEqual({
+        id: mockUser.id,
+        email: mockUser.email,
+        username: mockUser.username,
+      })
     })
 
     it('should throw BadRequestException on error', async () => {
@@ -93,7 +92,11 @@ describe('AuthController', () => {
       )
       expect(result.message).toBe('Login successful')
       expect(result.accessToken).toBe(token)
-      expect(result.user).toEqual(mockUser)
+      expect(result.user).toEqual({
+        id: mockUser.id,
+        email: mockUser.email,
+        username: mockUser.username,
+      })
     })
 
     it('should throw BadRequestException on invalid credentials', async () => {
