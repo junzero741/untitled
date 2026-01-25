@@ -1,0 +1,1 @@
+export { ProseMirrorEditor } from './ProseMirrorEditor';
