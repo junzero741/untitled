@@ -3,6 +3,14 @@ import { PostsController } from '../posts.controller'
 import { PostsService } from '../posts.service'
 import { BadRequestException, ForbiddenException } from '@nestjs/common'
 
+interface MockAuthenticatedRequest {
+  user: {
+    sub: string
+    email: string
+    username: string
+  }
+}
+
 describe('PostsController', () => {
   let controller: PostsController
 
@@ -47,12 +55,12 @@ describe('PostsController', () => {
 
   describe('create', () => {
     it('should create a new post', async () => {
-      const req = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
       const body = { title: mockPost.title, content: mockPost.content }
 
       mockPostsService.create.mockResolvedValue(mockPost)
 
-      const result = await controller.create(req as any, body)
+      const result = await controller.create(req, body)
 
       expect(mockPostsService.create).toHaveBeenCalledWith(
         mockAuthor.id,
@@ -64,11 +72,11 @@ describe('PostsController', () => {
     })
 
     it('should throw BadRequestException when title or content is missing', async () => {
-      const req = { user: mockAuthor }
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
       const body = { title: '', content: '' }
 
       await expect(
-        controller.create(req as any, body),
+        controller.create(req, body),
       ).rejects.toThrow(BadRequestException)
     })
   })
@@ -140,13 +148,13 @@ describe('PostsController', () => {
 
   describe('update', () => {
     it('should update a post', async () => {
-      const req = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
       const body = { title: 'Updated Title', content: 'Updated content' }
       const updatedPost = { ...mockPost, ...body }
 
       mockPostsService.update.mockResolvedValue(updatedPost)
 
-      const result = await controller.update(req as any, mockPost.id, body)
+      const result = await controller.update(req, mockPost.id, body)
 
       expect(mockPostsService.update).toHaveBeenCalledWith(
         mockPost.id,
@@ -159,24 +167,24 @@ describe('PostsController', () => {
     })
 
     it('should throw ForbiddenException when not authorized', async () => {
-      const req = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
+      const req: MockAuthenticatedRequest = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
       const body = { title: 'Updated Title', content: 'Updated content' }
 
       mockPostsService.update.mockResolvedValue(null)
 
       await expect(
-        controller.update(req as any, mockPost.id, body),
+        controller.update(req, mockPost.id, body),
       ).rejects.toThrow(ForbiddenException)
     })
   })
 
   describe('remove', () => {
     it('should delete a post', async () => {
-      const req = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
 
       mockPostsService.remove.mockResolvedValue(true)
 
-      const result = await controller.remove(req as any, mockPost.id)
+      const result = await controller.remove(req, mockPost.id)
 
       expect(mockPostsService.remove).toHaveBeenCalledWith(
         mockPost.id,
@@ -186,12 +194,12 @@ describe('PostsController', () => {
     })
 
     it('should throw ForbiddenException when not authorized', async () => {
-      const req = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
+      const req: MockAuthenticatedRequest = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
 
       mockPostsService.remove.mockResolvedValue(false)
 
       await expect(
-        controller.remove(req as any, mockPost.id),
+        controller.remove(req, mockPost.id),
       ).rejects.toThrow(ForbiddenException)
     })
   })
