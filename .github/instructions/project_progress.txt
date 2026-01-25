@@ -12,11 +12,11 @@
   • Backend: Nest.js, PostgreSQL
 
 2. 현재 진행 단계
-• 단계: 사용자 인증 기능 구현 완료
+• 단계: 게시글 CRUD 기능 구현 완료
 
-• 진행률: 30%
+• 진행률: 45%
 
-• 주요 마일스톤: 로그인/회원가입 API 구현 완료
+• 주요 마일스톤: 게시글 조회/작성/수정/삭제 API 구현 완료
 
 3. 세부 작업 현황
 • [완료] 요구 사항 정의
@@ -40,9 +40,19 @@
   - Login API (/auth/login)
   - JWT 검증 가드 및 전략 구현
 
-• [대기] WYSIWYG 에디터 구현 (Prosemirror)
+• [완료] 게시글 CRUD 기능 구현
+  - Posts 모듈 구성 (Controller, Service, Module, Types)
+  - Create: 게시글 생성 (POST /posts)
+  - Read: 게시글 조회 (GET /posts/:id), 게시글 목록 (GET /posts)
+  - Update: 게시글 수정 (PATCH /posts/:id)
+  - Delete: 게시글 삭제 (DELETE /posts/:id)
+  - 사용자별 게시글 조회 (GET /posts/author/:authorId)
+  - 페이지네이션 지원
+  - 조회수 카운팅 기능
+  - JWT 인증 기반 접근 제어
+  - 작성자만 수정/삭제 가능
 
-• [대기] 게시글 조회 및 목록 기능 구현
+• [대기] WYSIWYG 에디터 구현 (Prosemirror)
 
 4. 이슈 및 장애물
 • 특이사항 없음
