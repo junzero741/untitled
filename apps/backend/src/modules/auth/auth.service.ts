@@ -42,7 +42,7 @@ export class AuthService {
 
   async validateToken(token: string): Promise<JwtPayload> {
     try {
-      return this.jwtService.verify(token)
+      return this.jwtService.verify(token) as JwtPayload
     } catch (error) {
       throw new UnauthorizedException('Invalid token')
     }
