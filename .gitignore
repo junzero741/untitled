@@ -9,4 +9,3 @@ coverage
 *.log
 build/
 out/
-package-lock.json
