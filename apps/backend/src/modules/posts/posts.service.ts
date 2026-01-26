@@ -35,10 +35,9 @@ export class PostsService {
       relations: ['author'],
     })
 
-    // 조회수 증가
+    // 조회수 증가 - 데이터베이스 레벨에서 원자적으로 증가시켜 동시성 문제를 방지
     if (post) {
-      post.views += 1
-      await this.postsRepository.save(post)
+      await this.postsRepository.increment({ id }, 'views', 1)
     }
 
     return post
