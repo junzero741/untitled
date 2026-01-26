@@ -26,29 +26,9 @@
  *    - posts(createdAt): 날짜별 조회 성능
  */
 
-export const DATABASE_SCHEMA = {
-  users: {
-    tableName: 'users',
-    columns: {
-      id: 'uuid',
-      email: 'varchar(255)',
-      username: 'varchar(100)',
-      password: 'varchar(255)',
-      bio: 'text',
-      createdAt: 'timestamp',
-      updatedAt: 'timestamp',
-    },
-  },
-  posts: {
-    tableName: 'posts',
-    columns: {
-      id: 'uuid',
-      title: 'varchar(255)',
-      content: 'text',
-      authorId: 'uuid',
-      views: 'integer',
-      createdAt: 'timestamp',
-      updatedAt: 'timestamp',
-    },
-  },
-}
+// 이 파일은 DATABASE_SCHEMA.md 및 TypeORM 엔티티에 정의된 내용과 함께
+// 데이터베이스 구조를 설명하는 문서 용도로만 사용됩니다.
+// 별도의 런타임 상수는 정의하지 않으며, 스키마 변경 시 여기에 주석을 갱신하세요.
+
+// 빈 export를 추가하여 이 파일을 명시적인 ES 모듈로 유지합니다.
+export {};
