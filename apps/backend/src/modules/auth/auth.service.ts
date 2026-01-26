@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { UsersService } from '../users/users.service'
 import { User } from '../../entities'
+import { JwtPayload } from './auth.types'
 
 @Injectable()
 export class AuthService {
@@ -39,11 +40,11 @@ export class AuthService {
     }
   }
 
-  async validateToken(token: string): Promise<any> {
+  async validateToken(token: string): Promise<JwtPayload> {
     try {
-      return this.jwtService.verify(token)
+      return this.jwtService.verify(token) as JwtPayload
     } catch (error) {
-      throw new Error('Invalid token')
+      throw new UnauthorizedException('Invalid token')
     }
   }
 }
