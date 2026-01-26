@@ -1,3 +1,5 @@
+import { Post } from '../../entities/post.entity'
+
 /**
  * 게시글 생성 요청 타입
  */
@@ -18,7 +20,7 @@ export interface UpdatePostRequest {
  * 게시글 목록 응답 타입
  */
 export interface PostListResponse {
-  data: any[]
+  data: Post[]
   total: number
   page: number
   limit: number
