@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { UnauthorizedException, ConflictException } from '@nestjs/common'
 import { AuthService } from '../auth.service'
 import { UsersService } from '../../users/users.service'
 import { JwtService } from '@nestjs/jwt'
@@ -42,6 +43,7 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     it('should create a new user', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(null)
       mockUsersService.create.mockResolvedValue(mockUser)
 
       const result = await service.signUp(
@@ -50,12 +52,21 @@ describe('AuthService', () => {
         'password123',
       )
 
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(mockUser.email)
       expect(mockUsersService.create).toHaveBeenCalledWith(
         mockUser.email,
         mockUser.username,
         'password123',
       )
       expect(result).toEqual(mockUser)
+    })
+
+    it('should throw ConflictException if user already exists', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(mockUser)
+
+      await expect(
+        service.signUp(mockUser.email, mockUser.username, 'password123'),
+      ).rejects.toThrow(ConflictException)
     })
   })
 
@@ -79,21 +90,21 @@ describe('AuthService', () => {
       expect(result.user).toEqual(mockUser)
     })
 
-    it('should throw error if user not found', async () => {
+    it('should throw UnauthorizedException if user not found', async () => {
       mockUsersService.findByEmail.mockResolvedValue(null)
 
       await expect(
         service.login(mockUser.email, 'password123'),
-      ).rejects.toThrow('User not found')
+      ).rejects.toThrow(UnauthorizedException)
     })
 
-    it('should throw error if password is invalid', async () => {
+    it('should throw UnauthorizedException if password is invalid', async () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser)
       mockUsersService.validatePassword.mockResolvedValue(false)
 
       await expect(
         service.login(mockUser.email, 'wrongpassword'),
-      ).rejects.toThrow('Invalid password')
+      ).rejects.toThrow(UnauthorizedException)
     })
   })
 
@@ -108,13 +119,13 @@ describe('AuthService', () => {
       expect(result).toEqual(payload)
     })
 
-    it('should throw error on invalid token', async () => {
+    it('should throw UnauthorizedException on invalid token', async () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Invalid token')
       })
 
       await expect(service.validateToken('invalid-token')).rejects.toThrow(
-        'Invalid token',
+        UnauthorizedException,
       )
     })
   })

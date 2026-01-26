@@ -25,10 +25,10 @@ export class User {
     length: 255,
     comment: 'Stores the user password as a hashed value (e.g. bcrypt), not plain text',
   })
-  password: string
+  password!: string
 
   @Column({ type: 'text', nullable: true })
-  bio: string | null
+  bio!: string | null
 
   @CreateDateColumn()
   createdAt!: Date
