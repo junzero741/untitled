@@ -28,7 +28,7 @@ export class User {
   password: string
 
   @Column({ type: 'text', nullable: true })
-  bio: string
+  bio: string | null
 
   @CreateDateColumn()
   createdAt: Date
