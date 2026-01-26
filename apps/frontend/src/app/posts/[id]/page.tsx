@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { parseJwtToken } from '@/utils/jwt';
 
 interface Post {
   id: string;
@@ -30,13 +31,9 @@ export default function PostDetailPage() {
   useEffect(() => {
     // 현재 로그인한 사용자 정보 가져오기
     const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setCurrentUserId(payload.sub);
-      } catch (err) {
-        console.error('토큰 파싱 실패:', err);
-      }
+    const payload = parseJwtToken(token);
+    if (payload) {
+      setCurrentUserId(payload.sub);
     }
 
     fetchPost();

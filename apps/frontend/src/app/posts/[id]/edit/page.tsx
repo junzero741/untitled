@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
+import { parseJwtToken } from '@/utils/jwt';
 
 interface Post {
   id: string;
@@ -48,8 +49,8 @@ export default function EditPostPage() {
       const data: Post = await response.json();
 
       // 작성자 확인
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (data.author.id !== payload.sub) {
+      const payload = parseJwtToken(token);
+      if (!payload || data.author.id !== payload.sub) {
         alert('수정 권한이 없습니다.');
         router.push(`/posts/${postId}`);
         return;
