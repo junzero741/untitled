@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { PostsController } from '../posts.controller'
 import { PostsService } from '../posts.service'
-import { BadRequestException, ForbiddenException } from '@nestjs/common'
+import { BadRequestException, NotFoundException } from '@nestjs/common'
 
 interface MockAuthenticatedRequest {
   user: {
@@ -114,11 +114,11 @@ describe('PostsController', () => {
       expect(result.post).toEqual(mockPost)
     })
 
-    it('should throw BadRequestException when post not found', async () => {
+    it('should throw NotFoundException when post not found', async () => {
       mockPostsService.findById.mockResolvedValue(null)
 
       await expect(controller.findOne('non-existent-id')).rejects.toThrow(
-        BadRequestException,
+        NotFoundException,
       )
     })
   })
@@ -166,15 +166,32 @@ describe('PostsController', () => {
       expect(result.post).toEqual(updatedPost)
     })
 
-    it('should throw ForbiddenException when not authorized', async () => {
-      const req: MockAuthenticatedRequest = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
-      const body = { title: 'Updated Title', content: 'Updated content' }
+    it('should support partial updates with only title', async () => {
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
+      const body = { title: 'Updated Title' }
+      const updatedPost = { ...mockPost, title: 'Updated Title' }
 
-      mockPostsService.update.mockResolvedValue(null)
+      mockPostsService.update.mockResolvedValue(updatedPost)
+
+      const result = await controller.update(req, mockPost.id, body)
+
+      expect(mockPostsService.update).toHaveBeenCalledWith(
+        mockPost.id,
+        mockAuthor.id,
+        body.title,
+        undefined,
+      )
+      expect(result.message).toBe('Post updated successfully')
+      expect(result.post).toEqual(updatedPost)
+    })
+
+    it('should throw BadRequestException when no fields provided', async () => {
+      const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
+      const body = {}
 
       await expect(
         controller.update(req, mockPost.id, body),
-      ).rejects.toThrow(ForbiddenException)
+      ).rejects.toThrow(BadRequestException)
     })
   })
 
@@ -182,7 +199,7 @@ describe('PostsController', () => {
     it('should delete a post', async () => {
       const req: MockAuthenticatedRequest = { user: { sub: mockAuthor.id, email: mockAuthor.email, username: mockAuthor.username } }
 
-      mockPostsService.remove.mockResolvedValue(true)
+      mockPostsService.remove.mockResolvedValue(undefined)
 
       const result = await controller.remove(req, mockPost.id)
 
@@ -191,16 +208,6 @@ describe('PostsController', () => {
         mockAuthor.id,
       )
       expect(result.message).toBe('Post deleted successfully')
-    })
-
-    it('should throw ForbiddenException when not authorized', async () => {
-      const req: MockAuthenticatedRequest = { user: { sub: 'different-user-id', email: mockAuthor.email, username: mockAuthor.username } }
-
-      mockPostsService.remove.mockResolvedValue(false)
-
-      await expect(
-        controller.remove(req, mockPost.id),
-      ).rejects.toThrow(ForbiddenException)
     })
   })
 })

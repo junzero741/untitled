@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   BadRequestException,
+  NotFoundException,
   UseGuards,
   Request,
   ForbiddenException,
@@ -37,28 +38,23 @@ export class PostsController {
     @Request() req: AuthenticatedRequest,
     @Body() body: { title: string; content: string },
   ) {
-    try {
-      // 공백만 포함된 제목/내용을 허용하지 않기 위해 앞뒤 공백을 제거한 값을 기준으로 검증합니다.
-      const title = body.title?.trim()
-      const content = body.content?.trim()
+    // 공백만 포함된 제목/내용을 허용하지 않기 위해 앞뒤 공백을 제거한 값을 기준으로 검증합니다.
+    const title = body.title?.trim()
+    const content = body.content?.trim()
 
-      if (!title || !content) {
-        throw new BadRequestException('Title and content are required')
-      }
+    if (!title || !content) {
+      throw new BadRequestException('Title and content are required')
+    }
 
-      const post = await this.postsService.create(
-        req.user.sub,
-        title,
-        content,
-      )
+    const post = await this.postsService.create(
+      req.user.sub,
+      title,
+      content,
+    )
 
-      return {
-        message: 'Post created successfully',
-        post,
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      throw new BadRequestException(message)
+    return {
+      message: 'Post created successfully',
+      post,
     }
   }
 
@@ -70,19 +66,14 @@ export class PostsController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
   ) {
-    try {
-      const pageNum = Math.max(1, parseInt(page) || 1)
-      const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10))
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10))
 
-      const result = await this.postsService.findAll(pageNum, limitNum)
+    const result = await this.postsService.findAll(pageNum, limitNum)
 
-      return {
-        message: 'Posts retrieved successfully',
-        ...result,
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      throw new BadRequestException(message)
+    return {
+      message: 'Posts retrieved successfully',
+      ...result,
     }
   }
 
@@ -91,49 +82,39 @@ export class PostsController {
    */
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    try {
-      const post = await this.postsService.findById(id)
+    const post = await this.postsService.findById(id)
 
-      if (!post) {
-        throw new BadRequestException('Post not found')
-      }
+    if (!post) {
+      throw new NotFoundException('Post not found')
+    }
 
-      return {
-        message: 'Post retrieved successfully',
-        post,
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      throw new BadRequestException(message)
+    return {
+      message: 'Post retrieved successfully',
+      post,
     }
   }
 
   /**
    * 사용자의 게시글 목록 조회
    */
-  @Get('author/:authorId')
+  @Get('posts-by-author/:authorId')
   async findByAuthor(
     @Param('authorId') authorId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
   ) {
-    try {
-      const pageNum = Math.max(1, parseInt(page) || 1)
-      const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10))
+    const pageNum = Math.max(1, parseInt(page) || 1)
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 10))
 
-      const result = await this.postsService.findByAuthorId(
-        authorId,
-        pageNum,
-        limitNum,
-      )
+    const result = await this.postsService.findByAuthorId(
+      authorId,
+      pageNum,
+      limitNum,
+    )
 
-      return {
-        message: 'Posts retrieved successfully',
-        ...result,
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      throw new BadRequestException(message)
+    return {
+      message: 'Posts retrieved successfully',
+      ...result,
     }
   }
 
@@ -145,10 +126,11 @@ export class PostsController {
   async update(
     @Request() req: AuthenticatedRequest,
     @Param('id') id: string,
-    @Body() body: { title: string; content: string },
+    @Body() body: { title?: string; content?: string },
   ) {
-    if (!body.title || !body.content) {
-      throw new BadRequestException('Title and content are required')
+    // 최소한 하나의 필드는 제공되어야 함
+    if (!body.title && !body.content) {
+      throw new BadRequestException('At least one field (title or content) must be provided')
     }
 
     const post = await this.postsService.update(
@@ -157,12 +139,6 @@ export class PostsController {
       body.title,
       body.content,
     )
-
-    if (!post) {
-      throw new ForbiddenException(
-        'Not authorized to update this post or post not found',
-      )
-    }
 
     return {
       message: 'Post updated successfully',
@@ -177,13 +153,7 @@ export class PostsController {
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   async remove(@Request() req: AuthenticatedRequest, @Param('id') id: string) {
-    const success = await this.postsService.remove(id, req.user.sub)
-
-    if (!success) {
-      throw new ForbiddenException(
-        'Not authorized to delete this post or post not found',
-      )
-    }
+    await this.postsService.remove(id, req.user.sub)
 
     return {
       message: 'Post deleted successfully',

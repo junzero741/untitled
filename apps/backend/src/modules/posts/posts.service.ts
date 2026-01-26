@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Post } from '../../entities/post.entity'
@@ -108,33 +108,48 @@ export class PostsService {
   async update(
     id: string,
     authorId: string,
-    title: string,
-    content: string,
-  ): Promise<Post | null> {
+    title?: string,
+    content?: string,
+  ): Promise<Post> {
     const post = await this.postsRepository.findOne({ where: { id } })
 
-    // 작성자 확인
-    if (!post || post.authorId !== authorId) {
-      return null
+    // 게시글 존재 여부 확인
+    if (!post) {
+      throw new NotFoundException('Post not found')
     }
 
-    post.title = title
-    post.content = content
+    // 작성자 권한 확인
+    if (post.authorId !== authorId) {
+      throw new ForbiddenException('Not authorized to update this post')
+    }
+
+    // 부분 업데이트 지원
+    if (title !== undefined) {
+      post.title = title
+    }
+    if (content !== undefined) {
+      post.content = content
+    }
+
     return this.postsRepository.save(post)
   }
 
   /**
    * 게시글 삭제
    */
-  async remove(id: string, authorId: string): Promise<boolean> {
+  async remove(id: string, authorId: string): Promise<void> {
     const post = await this.postsRepository.findOne({ where: { id } })
 
-    // 작성자 확인
-    if (!post || post.authorId !== authorId) {
-      return false
+    // 게시글 존재 여부 확인
+    if (!post) {
+      throw new NotFoundException('Post not found')
+    }
+
+    // 작성자 권한 확인
+    if (post.authorId !== authorId) {
+      throw new ForbiddenException('Not authorized to delete this post')
     }
 
     await this.postsRepository.remove(post)
-    return true
   }
 }
