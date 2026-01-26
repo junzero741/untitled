@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { PostsService } from '../posts.service'
 import { Post } from '../../../entities'
+import { NotFoundException, ForbiddenException } from '@nestjs/common'
 
 describe('PostsService', () => {
   let service: PostsService
@@ -29,6 +30,7 @@ describe('PostsService', () => {
     findOne: jest.fn(),
     findAndCount: jest.fn(),
     remove: jest.fn(),
+    increment: jest.fn(),
   }
 
   beforeEach(async () => {
@@ -76,9 +78,8 @@ describe('PostsService', () => {
 
   describe('findById', () => {
     it('should find post by id and increment views', async () => {
-      const postWithViews = { ...mockPost, views: 1 }
       mockRepository.findOne.mockResolvedValue(mockPost)
-      mockRepository.save.mockResolvedValue(postWithViews)
+      mockRepository.increment.mockResolvedValue(undefined)
 
       const result = await service.findById(mockPost.id)
 
@@ -86,8 +87,8 @@ describe('PostsService', () => {
         where: { id: mockPost.id },
         relations: ['author'],
       })
-      expect(mockRepository.save).toHaveBeenCalled()
-      expect(result).toEqual(postWithViews)
+      expect(mockRepository.increment).toHaveBeenCalledWith({ id: mockPost.id }, 'views', 1)
+      expect(result).toEqual(mockPost)
     })
 
     it('should return null if post not found', async () => {
@@ -96,6 +97,7 @@ describe('PostsService', () => {
       const result = await service.findById('non-existent-id')
 
       expect(result).toBeNull()
+      expect(mockRepository.increment).not.toHaveBeenCalled()
     })
   })
 
@@ -161,17 +163,48 @@ describe('PostsService', () => {
       expect(result).toEqual(updatedPost)
     })
 
-    it('should return null if user is not author', async () => {
-      mockRepository.findOne.mockResolvedValue(mockPost)
+    it('should support partial updates with only title', async () => {
+      const postToUpdate = { ...mockPost }
+      const updatedPost = { ...mockPost, title: 'Updated Title' }
+
+      mockRepository.findOne.mockResolvedValue(postToUpdate)
+      mockRepository.save.mockResolvedValue(updatedPost)
 
       const result = await service.update(
         mockPost.id,
-        'different-user-id',
+        mockAuthor.id,
         'Updated Title',
-        'Updated content',
+        undefined,
       )
 
-      expect(result).toBeNull()
+      expect(result.title).toBe('Updated Title')
+      expect(result.content).toBe(mockPost.content)
+    })
+
+    it('should throw NotFoundException if post not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null)
+
+      await expect(
+        service.update(
+          mockPost.id,
+          mockAuthor.id,
+          'Updated Title',
+          'Updated content',
+        )
+      ).rejects.toThrow(NotFoundException)
+    })
+
+    it('should throw ForbiddenException if user is not author', async () => {
+      mockRepository.findOne.mockResolvedValue(mockPost)
+
+      await expect(
+        service.update(
+          mockPost.id,
+          'different-user-id',
+          'Updated Title',
+          'Updated content',
+        )
+      ).rejects.toThrow(ForbiddenException)
     })
   })
 
@@ -180,19 +213,27 @@ describe('PostsService', () => {
       mockRepository.findOne.mockResolvedValue(mockPost)
       mockRepository.remove.mockResolvedValue(mockPost)
 
-      const result = await service.remove(mockPost.id, mockAuthor.id)
+      await service.remove(mockPost.id, mockAuthor.id)
 
       expect(mockRepository.findOne).toHaveBeenCalledWith({ where: { id: mockPost.id } })
       expect(mockRepository.remove).toHaveBeenCalledWith(mockPost)
-      expect(result).toBe(true)
     })
 
-    it('should return false if user is not author', async () => {
+    it('should throw NotFoundException if post not found', async () => {
+      mockRepository.findOne.mockResolvedValue(null)
+
+      await expect(
+        service.remove(mockPost.id, mockAuthor.id)
+      ).rejects.toThrow(NotFoundException)
+      expect(mockRepository.remove).not.toHaveBeenCalled()
+    })
+
+    it('should throw ForbiddenException if user is not author', async () => {
       mockRepository.findOne.mockResolvedValue(mockPost)
 
-      const result = await service.remove(mockPost.id, 'different-user-id')
-
-      expect(result).toBe(false)
+      await expect(
+        service.remove(mockPost.id, 'different-user-id')
+      ).rejects.toThrow(ForbiddenException)
       expect(mockRepository.remove).not.toHaveBeenCalled()
     })
   })
