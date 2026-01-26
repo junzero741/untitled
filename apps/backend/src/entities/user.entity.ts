@@ -19,7 +19,12 @@ export class User {
   @Column({ type: 'varchar', length: 100, unique: true })
   username: string
 
-  @Column({ type: 'varchar', length: 255 })
+  // Stores the user's password as a securely hashed value (e.g. bcrypt), never in plain text.
+  @Column({
+    type: 'varchar',
+    length: 255,
+    comment: 'Stores the user password as a hashed value (e.g. bcrypt), not plain text',
+  })
   password: string
 
   @Column({ type: 'text', nullable: true })
