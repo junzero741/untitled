@@ -34,21 +34,29 @@ export function parseJwtToken(token: string | null): JwtPayload | null {
       return null;
     }
 
-    // 두 번째 부분(payload)을 base64 디코딩
-    const payload = parts[1];
+    // 두 번째 부분(payload)을 base64url 디코딩
+    let payload = parts[1];
     
-    // Base64 문자열 검증 (영문자, 숫자, +, /, = 만 허용)
-    if (!/^[A-Za-z0-9+/=_-]*$/.test(payload)) {
-      console.error('Invalid base64 format in JWT token payload');
+    // Base64url 문자열 검증 (JWT는 base64url 인코딩 사용: A-Z, a-z, 0-9, -, _ 만 허용)
+    if (!/^[A-Za-z0-9_-]*$/.test(payload)) {
+      console.error('Invalid base64url format in JWT token payload');
       return null;
     }
+    
+    // base64url을 base64로 변환 (JWT는 base64url 인코딩을 사용)
+    // - base64url의 '-'를 base64의 '+'로 변환
+    // - base64url의 '_'를 base64의 '/'로 변환
+    // - 필요한 경우 padding('=') 추가
+    payload = payload.replace(/-/g, '+').replace(/_/g, '/');
+    const paddingLength = (4 - payload.length % 4) % 4;
+    payload = payload.padEnd(payload.length + paddingLength, '=');
     
     // base64 디코딩
     let decodedPayload: string;
     try {
       decodedPayload = atob(payload);
     } catch (error) {
-      console.error('Failed to decode base64 payload:', error);
+      console.error('Failed to decode base64url payload:', error);
       return null;
     }
     
