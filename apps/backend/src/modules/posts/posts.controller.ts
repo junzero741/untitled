@@ -38,14 +38,18 @@ export class PostsController {
     @Body() body: { title: string; content: string },
   ) {
     try {
-      if (!body.title || !body.content) {
+      // 공백만 포함된 제목/내용을 허용하지 않기 위해 앞뒤 공백을 제거한 값을 기준으로 검증합니다.
+      const title = body.title?.trim()
+      const content = body.content?.trim()
+
+      if (!title || !content) {
         throw new BadRequestException('Title and content are required')
       }
 
       const post = await this.postsService.create(
         req.user.sub,
-        body.title,
-        body.content,
+        title,
+        content,
       )
 
       return {
