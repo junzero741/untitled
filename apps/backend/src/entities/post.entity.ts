@@ -15,29 +15,29 @@ import { User } from './user.entity'
 @Index(['createdAt'])
 export class Post {
   @PrimaryGeneratedColumn('uuid')
-  id: string
+  id!: string
 
   @Column({ type: 'varchar', length: 255 })
-  title: string
+  title!: string
 
   @Column({ type: 'text' })
-  content: string
+  content!: string
 
   @Column({ type: 'uuid' })
-  authorId: string
+  authorId!: string
 
-  @ManyToOne(() => User, (user) => user.posts, {
+  @ManyToOne(() => User, (user: User) => user.posts, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'authorId' })
-  author: User
+  author!: User
 
   @Column({ type: 'int', default: 0 })
-  views: number
+  views!: number
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt!: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt!: Date
 }
