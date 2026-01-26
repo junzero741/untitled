@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { UnauthorizedException } from '@nestjs/common'
 import { AuthService } from '../auth.service'
 import { UsersService } from '../../users/users.service'
 import { JwtService } from '@nestjs/jwt'
@@ -79,21 +80,27 @@ describe('AuthService', () => {
       expect(result.user).toEqual(mockUser)
     })
 
-    it('should throw error if user not found', async () => {
+    it('should throw UnauthorizedException if user not found', async () => {
       mockUsersService.findByEmail.mockResolvedValue(null)
 
       await expect(
         service.login(mockUser.email, 'password123'),
-      ).rejects.toThrow('User not found')
+      ).rejects.toThrow(UnauthorizedException)
+      await expect(
+        service.login(mockUser.email, 'password123'),
+      ).rejects.toThrow('Invalid credentials')
     })
 
-    it('should throw error if password is invalid', async () => {
+    it('should throw UnauthorizedException if password is invalid', async () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser)
       mockUsersService.validatePassword.mockResolvedValue(false)
 
       await expect(
         service.login(mockUser.email, 'wrongpassword'),
-      ).rejects.toThrow('Invalid password')
+      ).rejects.toThrow(UnauthorizedException)
+      await expect(
+        service.login(mockUser.email, 'wrongpassword'),
+      ).rejects.toThrow('Invalid credentials')
     })
   })
 
