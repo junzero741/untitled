@@ -37,9 +37,29 @@ export function parseJwtToken(token: string | null): JwtPayload | null {
     // 두 번째 부분(payload)을 base64 디코딩
     const payload = parts[1];
     
-    // base64 디코딩 및 JSON 파싱
-    const decodedPayload = atob(payload);
-    const parsedPayload = JSON.parse(decodedPayload) as JwtPayload;
+    // Base64 문자열 검증 (영문자, 숫자, +, /, = 만 허용)
+    if (!/^[A-Za-z0-9+/=_-]*$/.test(payload)) {
+      console.error('Invalid base64 format in JWT token payload');
+      return null;
+    }
+    
+    // base64 디코딩
+    let decodedPayload: string;
+    try {
+      decodedPayload = atob(payload);
+    } catch (error) {
+      console.error('Failed to decode base64 payload:', error);
+      return null;
+    }
+    
+    // JSON 파싱
+    let parsedPayload: JwtPayload;
+    try {
+      parsedPayload = JSON.parse(decodedPayload) as JwtPayload;
+    } catch (error) {
+      console.error('Failed to parse JSON payload:', error);
+      return null;
+    }
 
     // 필수 필드 검증
     if (!parsedPayload.sub) {
@@ -49,8 +69,8 @@ export function parseJwtToken(token: string | null): JwtPayload | null {
 
     return parsedPayload;
   } catch (error) {
-    // base64 디코딩 실패, JSON 파싱 실패 등의 에러 처리
-    console.error('Failed to parse JWT token:', error);
+    // 예상치 못한 에러 처리
+    console.error('Unexpected error while parsing JWT token:', error);
     return null;
   }
 }
