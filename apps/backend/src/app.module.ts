@@ -6,6 +6,7 @@ import { AppService } from './app.service'
 import { User, Post } from './entities'
 import { AuthModule } from './modules/auth/auth.module'
 import { UsersModule } from './modules/users/users.module'
+import { PostsModule } from './modules/posts/posts.module'
 import { DatabaseModule } from './database/database.module'
 
 
@@ -19,6 +20,7 @@ import { DatabaseModule } from './database/database.module'
     TypeOrmModule.forFeature([User, Post]),
     AuthModule,
     UsersModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
