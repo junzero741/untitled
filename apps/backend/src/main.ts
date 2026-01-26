@@ -6,7 +6,7 @@ async function bootstrap() {
 
   // Allow frontend dev server to call the API
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin: process.env.ALLOWED_ORIGINS?.split(',').map(origin => origin.trim()).filter(origin => origin) || ['http://localhost:3000'],
     credentials: true,
   })
 
