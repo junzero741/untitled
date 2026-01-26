@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { User, Post } from './entities'
+import { DatabaseModule } from './database/database.module'
 
 @Module({
   imports: [
@@ -11,17 +12,7 @@ import { User, Post } from './entities'
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'bulletin_board',
-      entities: [User, Post],
-      synchronize: process.env.NODE_ENV === 'development',
-      logging: process.env.NODE_ENV === 'development',
-    }),
+    DatabaseModule,
     TypeOrmModule.forFeature([User, Post]),
   ],
   controllers: [AppController],
