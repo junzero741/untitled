@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { UsersService } from '../users/users.service'
 import { User } from '../../entities'
@@ -12,6 +12,10 @@ export class AuthService {
   ) {}
 
   async signUp(email: string, username: string, password: string): Promise<User> {
+    const existingUser = await this.usersService.findByEmail(email)
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists')
+    }
     return this.usersService.create(email, username, password)
   }
 

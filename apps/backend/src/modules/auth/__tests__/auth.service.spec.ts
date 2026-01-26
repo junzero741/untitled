@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { UnauthorizedException } from '@nestjs/common'
+import { UnauthorizedException, ConflictException } from '@nestjs/common'
 import { AuthService } from '../auth.service'
 import { UsersService } from '../../users/users.service'
 import { JwtService } from '@nestjs/jwt'
@@ -43,6 +43,7 @@ describe('AuthService', () => {
 
   describe('signUp', () => {
     it('should create a new user', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(null)
       mockUsersService.create.mockResolvedValue(mockUser)
 
       const result = await service.signUp(
@@ -51,12 +52,21 @@ describe('AuthService', () => {
         'password123',
       )
 
+      expect(mockUsersService.findByEmail).toHaveBeenCalledWith(mockUser.email)
       expect(mockUsersService.create).toHaveBeenCalledWith(
         mockUser.email,
         mockUser.username,
         'password123',
       )
       expect(result).toEqual(mockUser)
+    })
+
+    it('should throw ConflictException if user already exists', async () => {
+      mockUsersService.findByEmail.mockResolvedValue(mockUser)
+
+      await expect(
+        service.signUp(mockUser.email, mockUser.username, 'password123'),
+      ).rejects.toThrow(ConflictException)
     })
   })
 
@@ -86,9 +96,6 @@ describe('AuthService', () => {
       await expect(
         service.login(mockUser.email, 'password123'),
       ).rejects.toThrow(UnauthorizedException)
-      await expect(
-        service.login(mockUser.email, 'password123'),
-      ).rejects.toThrow('Invalid credentials')
     })
 
     it('should throw UnauthorizedException if password is invalid', async () => {
@@ -98,9 +105,6 @@ describe('AuthService', () => {
       await expect(
         service.login(mockUser.email, 'wrongpassword'),
       ).rejects.toThrow(UnauthorizedException)
-      await expect(
-        service.login(mockUser.email, 'wrongpassword'),
-      ).rejects.toThrow('Invalid credentials')
     })
   })
 

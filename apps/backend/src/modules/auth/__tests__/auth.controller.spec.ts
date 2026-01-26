@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { AuthController } from '../auth.controller'
 import { AuthService } from '../auth.service'
-import { BadRequestException } from '@nestjs/common'
+import { ConflictException, UnauthorizedException } from '@nestjs/common'
 
 describe('AuthController', () => {
   let controller: AuthController
@@ -55,17 +55,19 @@ describe('AuthController', () => {
       })
     })
 
-    it('should throw BadRequestException on error', async () => {
+    it('should throw ConflictException when user already exists', async () => {
       const signUpDto = {
         email: mockUser.email,
         username: mockUser.username,
         password: 'password123',
       }
 
-      mockAuthService.signUp.mockRejectedValue(new Error('User already exists'))
+      mockAuthService.signUp.mockRejectedValue(
+        new ConflictException('User with this email already exists'),
+      )
 
       await expect(controller.signUp(signUpDto)).rejects.toThrow(
-        BadRequestException,
+        ConflictException,
       )
     })
   })
@@ -99,16 +101,18 @@ describe('AuthController', () => {
       })
     })
 
-    it('should throw BadRequestException on invalid credentials', async () => {
+    it('should throw UnauthorizedException on invalid credentials', async () => {
       const loginDto = {
         email: mockUser.email,
         password: 'wrongpassword',
       }
 
-      mockAuthService.login.mockRejectedValue(new Error('Invalid password'))
+      mockAuthService.login.mockRejectedValue(
+        new UnauthorizedException('Invalid credentials'),
+      )
 
       await expect(controller.login(loginDto)).rejects.toThrow(
-        BadRequestException,
+        UnauthorizedException,
       )
     })
   })
