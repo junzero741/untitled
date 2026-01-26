@@ -1,5 +1,2 @@
-import { Injectable } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
-
-@Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
+// JwtAuthGuard was removed because it was not referenced anywhere in the backend.
+// Reintroduce this guard together with the controllers/routes that will use it.

@@ -7,6 +7,8 @@ import { User, Post } from './entities'
 import { AuthModule } from './modules/auth/auth.module'
 import { UsersModule } from './modules/users/users.module'
 import { PostsModule } from './modules/posts/posts.module'
+import { DatabaseModule } from './database/database.module'
+
 
 @Module({
   imports: [
@@ -14,17 +16,7 @@ import { PostsModule } from './modules/posts/posts.module'
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'bulletin_board',
-      entities: [User, Post],
-      synchronize: process.env.NODE_ENV === 'development',
-      logging: process.env.NODE_ENV === 'development',
-    }),
+    DatabaseModule,
     TypeOrmModule.forFeature([User, Post]),
     AuthModule,
     UsersModule,
