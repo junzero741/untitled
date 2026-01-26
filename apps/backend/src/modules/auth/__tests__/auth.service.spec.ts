@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { UnauthorizedException } from '@nestjs/common'
 import { AuthService } from '../auth.service'
 import { UsersService } from '../../users/users.service'
 import { JwtService } from '@nestjs/jwt'
@@ -108,13 +109,13 @@ describe('AuthService', () => {
       expect(result).toEqual(payload)
     })
 
-    it('should throw error on invalid token', async () => {
+    it('should throw UnauthorizedException on invalid token', async () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('Invalid token')
       })
 
       await expect(service.validateToken('invalid-token')).rejects.toThrow(
-        'Invalid token',
+        UnauthorizedException,
       )
     })
   })
