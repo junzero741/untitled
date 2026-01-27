@@ -4,19 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { parseJwtToken } from '@/utils/jwt';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  views: number;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import { Post } from '@bulletin-board/shared';
 
 export default function PostDetailPage() {
   const router = useRouter();
