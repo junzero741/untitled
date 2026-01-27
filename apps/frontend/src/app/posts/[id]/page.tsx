@@ -3,27 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { parseJwtToken } from '@/utils/jwt';
 import { Post } from '@bulletin-board/shared';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function PostDetailPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
+  const { user, token } = useAuth();
 
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // 현재 로그인한 사용자 정보 가져오기
-    const token = localStorage.getItem('token');
-    const payload = parseJwtToken(token);
-    if (payload) {
-      setCurrentUserId(payload.sub);
-    }
-
     fetchPost();
   }, [postId]);
 
@@ -53,7 +46,6 @@ export default function PostDetailPage() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         router.push('/login');
         return;
@@ -87,7 +79,7 @@ export default function PostDetailPage() {
     });
   };
 
-  const isAuthor = post && currentUserId === post.author.id;
+  const isAuthor = post && user && user.id === post.author.id;
 
   if (isLoading) {
     return (

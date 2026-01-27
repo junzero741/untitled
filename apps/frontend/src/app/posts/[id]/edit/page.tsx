@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
-import { parseJwtToken } from '@/utils/jwt';
 import { Post } from '@bulletin-board/shared';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
+  const { user, token, logout } = useAuth();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -26,8 +27,7 @@ export default function EditPostPage() {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !user) {
         router.push('/login');
         return;
       }
@@ -41,8 +41,7 @@ export default function EditPostPage() {
       const data: Post = await response.json();
 
       // 작성자 확인
-      const payload = parseJwtToken(token);
-      if (!payload || data.author.id !== payload.sub) {
+      if (data.author.id !== user.id) {
         alert('수정 권한이 없습니다.');
         router.push(`/posts/${postId}`);
         return;
@@ -74,7 +73,6 @@ export default function EditPostPage() {
     setError(null);
 
     try {
-      const token = localStorage.getItem('token');
       if (!token) {
         router.push('/login');
         return;
@@ -94,7 +92,7 @@ export default function EditPostPage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem('token');
+          logout();
           router.push('/login');
           return;
         }

@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Post } from '@bulletin-board/shared';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function PostsPage() {
   const router = useRouter();
+  const { isAuthenticated, logout } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,8 +41,7 @@ export default function PostsPage() {
   };
 
   const handleCreatePost = () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!isAuthenticated) {
       router.push('/login');
       return;
     }
@@ -80,12 +81,22 @@ export default function PostsPage() {
         {/* 헤더 */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">게시글 목록</h1>
-          <button
-            onClick={handleCreatePost}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            글쓰기
-          </button>
+          <div className="flex gap-3">
+            {isAuthenticated && (
+              <button
+                onClick={logout}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                로그아웃
+              </button>
+            )}
+            <button
+              onClick={handleCreatePost}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              글쓰기
+            </button>
+          </div>
         </div>
 
         {/* 에러 메시지 */}
