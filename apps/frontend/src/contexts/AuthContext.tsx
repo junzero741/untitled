@@ -12,7 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string) => void;
+  login: (token: string) => boolean;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -41,13 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = (newToken: string) => {
+  const login = (newToken: string): boolean => {
     const payload = parseJwtToken(newToken);
     if (payload) {
       localStorage.setItem('token', newToken);
       setToken(newToken);
       setUser({ id: payload.sub });
+      return true;
     }
+    return false;
   };
 
   const logout = () => {

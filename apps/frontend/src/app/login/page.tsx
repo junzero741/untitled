@@ -42,7 +42,10 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      login(data.accessToken);
+      const success = login(data.accessToken);
+      if (!success) {
+        throw new Error('유효하지 않은 토큰입니다.');
+      }
       router.push('/posts');
     } catch (err) {
       setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
