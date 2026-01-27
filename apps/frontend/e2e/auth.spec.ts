@@ -22,12 +22,13 @@ test.describe('Authentication Flow', () => {
     await page.click('button[type="submit"]');
     
     // Wait for navigation - should redirect to posts or login page
-    await page.waitForURL(/.*\/(posts|login)/, { timeout: 5000 }).catch(() => {
-      // If no redirect happens, that's also acceptable for this test
-    });
-    
-    // Should redirect to posts or show success
-    // Adjust based on actual app behavior
+    // Some implementations might redirect, others might show a success message on the same page
+    try {
+      await page.waitForURL(/.*\/(posts|login)/, { timeout: 5000 });
+    } catch {
+      // If no redirect happens within timeout, that's acceptable for this test
+      // as some implementations show success message on the signup page
+    }
   });
 
   test('should navigate to login page and login', async ({ page }) => {
