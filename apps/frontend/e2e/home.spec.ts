@@ -33,7 +33,7 @@ test.describe('Homepage', () => {
       await expect(page).toHaveURL(/.*login/);
     } else {
       // If no login link, homepage might redirect to login
-      await page.waitForTimeout(500);
+      await page.waitForLoadState('networkidle');
     }
   });
 });

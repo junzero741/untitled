@@ -53,8 +53,8 @@ test.describe('Posts Management', () => {
     if (await submitButton.isVisible()) {
       await submitButton.click();
       
-      // Wait for navigation
-      await page.waitForTimeout(1000);
+      // Wait for navigation to posts list or post detail
+      await page.waitForURL(/.*posts/, { timeout: 5000 });
       
       // Should redirect to posts list or post detail
       await expect(page).toHaveURL(/.*posts/);
@@ -129,8 +129,8 @@ test.describe('Posts Management', () => {
         
         await deleteButton.click();
         
-        // Wait for navigation
-        await page.waitForTimeout(1000);
+        // Wait for navigation back to posts list
+        await page.waitForURL(/.*posts$/, { timeout: 5000 });
         
         // Should redirect back to posts list
         await expect(page).toHaveURL(/.*posts$/);

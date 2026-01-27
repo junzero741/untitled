@@ -21,8 +21,10 @@ test.describe('Authentication Flow', () => {
     // Submit the form
     await page.click('button[type="submit"]');
     
-    // Wait for navigation or success message
-    await page.waitForTimeout(1000);
+    // Wait for navigation - should redirect to posts or login page
+    await page.waitForURL(/.*\/(posts|login)/, { timeout: 5000 }).catch(() => {
+      // If no redirect happens, that's also acceptable for this test
+    });
     
     // Should redirect to posts or show success
     // Adjust based on actual app behavior
@@ -51,8 +53,8 @@ test.describe('Authentication Flow', () => {
     // Submit the form
     await page.click('button[type="submit"]');
     
-    // Wait for error message
-    await page.waitForTimeout(1000);
+    // Wait for error handling - page should stay on login
+    await page.waitForLoadState('networkidle');
     
     // Should still be on login page
     await expect(page).toHaveURL(/.*login/);
