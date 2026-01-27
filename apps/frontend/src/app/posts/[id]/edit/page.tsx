@@ -4,15 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
 import { parseJwtToken } from '@/utils/jwt';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: {
-    id: string;
-  };
-}
+import { Post } from '@bulletin-board/shared';
 
 export default function EditPostPage() {
   const router = useRouter();

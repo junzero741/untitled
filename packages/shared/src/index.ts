@@ -4,9 +4,13 @@ export interface Post {
   id: string
   title: string
   content: string
-  author: string
-  createdAt: Date
-  updatedAt: Date
+  author: {
+    id: string
+    username: string
+  }
+  views: number
+  createdAt: string
+  updatedAt: string
 }
 
 export interface User {

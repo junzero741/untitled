@@ -3,18 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  views: number;
-  createdAt: string;
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import { Post } from '@bulletin-board/shared';
 
 export default function PostsPage() {
   const router = useRouter();
