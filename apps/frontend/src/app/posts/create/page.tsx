@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CreatePostPage() {
   const router = useRouter();
+  const { token, logout } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,8 +31,6 @@ export default function CreatePostPage() {
 
     try {
       // JWT 토큰 가져오기
-      const token = localStorage.getItem('token');
-      
       if (!token) {
         router.push('/login');
         return;
@@ -50,7 +50,7 @@ export default function CreatePostPage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem('token');
+          logout();
           router.push('/login');
           return;
         }
