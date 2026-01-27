@@ -63,6 +63,14 @@
   - JWT 토큰 안전 파싱 유틸리티 구현 (에러 핸들링, base64url 지원)
   - CORS 설정을 환경 변수 기반으로 개선 (ALLOWED_ORIGINS)
 
+• [완료] React Context 기반 사용자 인증 상태 관리
+  - AuthContext 생성 및 전역 상태 관리
+  - localStorage 중앙 관리 (각 컴포넌트에서 직접 접근 제거)
+  - JWT 토큰 만료 검증 기능 추가
+  - 로그인/로그아웃 기능 Context로 제공
+  - 모든 페이지 컴포넌트에서 AuthContext 활용
+  - 게시글 목록 페이지에 로그아웃 버튼 추가
+
 • [대기] 추가 기능 개선
 
 4. 이슈 및 장애물
