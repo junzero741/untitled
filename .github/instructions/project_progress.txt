@@ -71,6 +71,17 @@
   - 모든 페이지 컴포넌트에서 AuthContext 활용
   - 게시글 목록 페이지에 로그아웃 버튼 추가
 
+• [완료] Playwright MCP 통합 (E2E 테스팅)
+  - Playwright 테스트 프레임워크 설치 및 설정
+  - E2E 테스트 디렉토리 구조 생성 (apps/frontend/e2e/)
+  - 인증 플로우 테스트 (signup, login, logout)
+  - 게시글 관리 테스트 (create, read, update, delete)
+  - 홈페이지 및 네비게이션 테스트
+  - Playwright 설정 파일 (playwright.config.ts) 구성
+  - 테스트 실행 스크립트 추가 (test:e2e, test:e2e:ui, test:e2e:debug 등)
+  - E2E 테스트 가이드 문서 작성 (README.md)
+  - .gitignore에 Playwright 아티팩트 제외 설정
+
 • [대기] 추가 기능 개선
 
 4. 이슈 및 장애물
