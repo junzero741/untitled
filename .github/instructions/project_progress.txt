@@ -63,6 +63,8 @@
   - JWT 토큰 안전 파싱 유틸리티 구현 (에러 핸들링, base64url 지원)
   - CORS 설정을 환경 변수 기반으로 개선 (ALLOWED_ORIGINS)
   - DatabaseModule에서 ConfigService를 통한 환경 변수 주입 (TypeOrmModule.forRootAsync 사용)
+  - AuthModule에서 ConfigService를 통한 환경 변수 주입 (JwtModule.registerAsync 사용)
+  - NestJS 모듈 아키텍처 일관성 개선 (async 의존성 주입 패턴 통일)
 
 • [완료] React Context 기반 사용자 인증 상태 관리
   - AuthContext 생성 및 전역 상태 관리
