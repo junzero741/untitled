@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { withAuth } from '@/components/HOC';
 
-export default function SignupPage() {
+function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -180,3 +181,8 @@ export default function SignupPage() {
     </div>
   );
 }
+
+// withAuth HOC를 사용하여 이미 로그인한 사용자는 접근 불가하도록 설정
+export default withAuth(SignupPage, {
+  requireAuth: false,
+});
