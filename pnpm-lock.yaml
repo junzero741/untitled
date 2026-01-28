@@ -149,11 +149,11 @@ importers:
         specifier: ^22.10.6
         version: 22.19.7
       '@types/react':
-        specifier: ^19.1.5
-        version: 19.2.9
+        specifier: ^19.2.3
+        version: 19.2.3
       '@types/react-dom':
-        specifier: ^19.1.5
-        version: 19.2.3(@types/react@19.2.9)
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.3)
       autoprefixer:
         specifier: ^10.4.16
         version: 10.4.23(postcss@8.5.6)
@@ -1797,16 +1797,16 @@ packages:
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
     dev: true
 
-  /@types/react-dom@19.2.3(@types/react@19.2.9):
+  /@types/react-dom@19.2.3(@types/react@19.2.3):
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
       '@types/react': ^19.2.0
     dependencies:
-      '@types/react': 19.2.9
+      '@types/react': 19.2.3
     dev: true
 
-  /@types/react@19.2.9:
-    resolution: {integrity: sha512-Lpo8kgb/igvMIPeNV2rsYKTgaORYdO1XGVZ4Qz3akwOj0ySGYMPlQWa8BaLn0G63D1aSaAQ5ldR06wCpChQCjA==}
+  /@types/react@19.2.3:
+    resolution: {integrity: sha512-k5dJVszUiNr1DSe8Cs+knKR6IrqhqdhpUwzqhkS8ecQTSf3THNtbfIp/umqHMpX2bv+9dkx3fwDv/86LcSfvSg==}
     dependencies:
       csstype: 3.2.3
     dev: true
