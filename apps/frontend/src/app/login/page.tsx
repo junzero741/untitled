@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { withAuth } from '@/components/HOC';
+import { api, ApiClientError } from '@/lib/api';
 
 function LoginPage() {
   const router = useRouter();
@@ -26,30 +27,22 @@ function LoginPage() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          password: password.trim(),
-        }),
+      const data = await api.auth.login({
+        email: email.trim(),
+        password: password.trim(),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || '로그인에 실패했습니다.');
-      }
-
-      const data = await response.json();
       const success = login(data.accessToken);
       if (!success) {
         throw new Error('유효하지 않은 토큰입니다.');
       }
       router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '로그인에 실패했습니다.');
+      }
     } finally {
       setIsSubmitting(false);
     }

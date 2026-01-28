@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
-import { Post } from '@bulletin-board/shared';
 import { useAuth } from '@/contexts/AuthContext';
+import { api, ApiClientError, Post } from '@/lib/api';
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -32,13 +32,7 @@ export default function EditPostPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`);
-
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.');
-      }
-
-      const data: Post = await response.json();
+      const data = await api.posts.getPost(postId);
 
       // 작성자 확인
       if (data.author.id !== user.id) {
@@ -50,7 +44,11 @@ export default function EditPostPage() {
       setTitle(data.title);
       setContent(data.content);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -78,33 +76,31 @@ export default function EditPostPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      await api.posts.updatePost(
+        postId,
+        {
           title: title.trim(),
           content: content.trim(),
-        }),
-      });
+        },
+        token
+      );
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      router.push(`/posts/${postId}`);
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        if (err.statusCode === 401) {
           logout();
           router.push('/login');
           return;
         }
-        if (response.status === 403) {
-          throw new Error('수정 권한이 없습니다.');
+        if (err.statusCode === 403) {
+          setError('수정 권한이 없습니다.');
+          return;
         }
-        throw new Error('게시글 수정에 실패했습니다.');
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '게시글 수정에 실패했습니다.');
       }
-
-      router.push(`/posts/${postId}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글 수정에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }

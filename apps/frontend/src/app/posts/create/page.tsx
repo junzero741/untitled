@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProseMirrorEditor } from '@/components/Editor';
 import { useAuth } from '@/contexts/AuthContext';
+import { api, ApiClientError } from '@/lib/api';
 
 export default function CreatePostPage() {
   const router = useRouter();
@@ -30,37 +31,31 @@ export default function CreatePostPage() {
     setError(null);
 
     try {
-      // JWT 토큰 가져오기
       if (!token) {
         router.push('/login');
         return;
       }
 
-      const response = await fetch('http://localhost:3001/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const data = await api.posts.createPost(
+        {
           title: title.trim(),
           content: content.trim(),
-        }),
-      });
+        },
+        token
+      );
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      router.push(`/posts/${data.id}`);
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        if (err.statusCode === 401) {
           logout();
           router.push('/login');
           return;
         }
-        throw new Error('게시글 작성에 실패했습니다.');
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '게시글 작성에 실패했습니다.');
       }
-
-      const data = await response.json();
-      router.push(`/posts/${data.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글 작성에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }

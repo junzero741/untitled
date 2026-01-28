@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { withAuth } from '@/components/HOC';
+import { api, ApiClientError } from '@/lib/api';
 
 function SignupPage() {
   const router = useRouter();
@@ -38,28 +39,21 @@ function SignupPage() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3001/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          username: username.trim(),
-          password: password.trim(),
-          bio: bio.trim() || undefined,
-        }),
+      await api.auth.signup({
+        email: email.trim(),
+        username: username.trim(),
+        password: password.trim(),
+        bio: bio.trim() || undefined,
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || '회원가입에 실패했습니다.');
-      }
 
       alert('회원가입이 완료되었습니다. 로그인해주세요.');
       router.push('/login');
     } catch (err) {
-      setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '회원가입에 실패했습니다.');
+      }
     } finally {
       setIsSubmitting(false);
     }
