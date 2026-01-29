@@ -10,7 +10,11 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:restart": "docker-compose restart",
+    "db:logs": "docker-compose logs -f postgres"
   },
   "dependencies": {
     "@nestjs/common": "^10.2.10",

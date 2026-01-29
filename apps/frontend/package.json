@@ -31,8 +31,8 @@
   "devDependencies": {
     "@playwright/test": "^1.58.0",
     "@types/node": "^22.10.6",
-    "@types/react": "^19.1.5",
-    "@types/react-dom": "^19.1.5",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.16",
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.1.4",
