@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { AuthGate } from '@/components/HOC';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { logout } = useAuth();
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="text-center space-y-6">
@@ -14,12 +20,36 @@ export default function Home() {
           >
             게시판 둘러보기
           </Link>
-          <Link
-            href="/login"
-            className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-medium"
-          >
-            로그인
-          </Link>
+
+          {/* 로그인하지 않은 사용자용 버튼 */}
+          <AuthGate requireAuth={false}>
+            <Link
+              href="/login"
+              className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+            >
+              로그인
+            </Link>
+          </AuthGate>
+
+          {/* 로그인한 사용자용 버튼 */}
+          <AuthGate requireAuth={true}>
+            <Link
+              href="/profile"
+              className="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+            >
+              프로필
+            </Link>
+          </AuthGate>
+
+          {/* 로그인한 사용자용 로그아웃 버튼 */}
+          <AuthGate requireAuth={true}>
+            <button
+              onClick={logout}
+              className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium"
+            >
+              로그아웃
+            </button>
+          </AuthGate>
         </div>
 
         <div className="mt-12 text-sm text-gray-500">
