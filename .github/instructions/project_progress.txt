@@ -85,6 +85,27 @@
   - E2E 테스트 가이드 문서 작성 (README.md)
   - .gitignore에 Playwright 아티팩트 제외 설정
 
+• [완료] 프론트엔드 API 레이어 모듈화
+  - src/lib/api/ 디렉토리 구조 생성
+  - API 클라이언트 공통 로직 구현 (client.ts)
+    - fetch 래퍼 함수로 공통 설정 및 에러 처리
+    - GET, POST, PATCH, DELETE 메서드 지원
+    - JWT 토큰 자동 헤더 주입
+    - ApiClientError 커스텀 에러 클래스
+  - API 타입 정의 (types.ts)
+    - Auth API 요청/응답 타입
+    - Posts API 요청/응답 타입
+  - Auth API 함수 모듈화 (auth.ts)
+    - login, signup 함수 구현
+  - Posts API 함수 모듈화 (posts.ts)
+    - getPosts, getPost, createPost, updatePost, deletePost 함수 구현
+  - 통합 API export (index.ts)
+  - 기존 페이지 컴포넌트에서 API 모듈 사용으로 리팩토링
+    - login/page.tsx, signup/page.tsx
+    - posts/page.tsx, posts/create/page.tsx
+    - posts/[id]/page.tsx, posts/[id]/edit/page.tsx
+  - 모든 TypeScript 타입 오류 수정 완료
+
 • [대기] 추가 기능 개선
 
 4. 이슈 및 장애물

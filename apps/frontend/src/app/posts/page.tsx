@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Post } from '@bulletin-board/shared';
 import { useAuth } from '@/contexts/AuthContext';
+import { api, ApiClientError, Post } from '@/lib/api';
 
 export default function PostsPage() {
   const router = useRouter();
@@ -24,17 +24,15 @@ export default function PostsPage() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3001/posts?page=${page}&limit=10`);
-
-      if (!response.ok) {
-        throw new Error('게시글 목록을 불러오는데 실패했습니다.');
-      }
-
-      const data = await response.json();
+      const data = await api.posts.getPosts({ page, limit: 10 });
       setPosts(data.posts);
       setTotalPages(data.totalPages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글 목록을 불러오는데 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '게시글 목록을 불러오는데 실패했습니다.');
+      }
     } finally {
       setIsLoading(false);
     }

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Post } from '@bulletin-board/shared';
 import { useAuth } from '@/contexts/AuthContext';
+import { api, ApiClientError, Post } from '@/lib/api';
 
 export default function PostDetailPage() {
   const router = useRouter();
@@ -25,16 +25,14 @@ export default function PostDetailPage() {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3001/posts/${postId}`);
-
-      if (!response.ok) {
-        throw new Error('게시글을 불러오는데 실패했습니다.');
-      }
-
-      const data = await response.json();
+      const data = await api.posts.getPost(postId);
       setPost(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        setError(err.message);
+      } else {
+        setError(err instanceof Error ? err.message : '게시글을 불러오는데 실패했습니다.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -51,20 +49,14 @@ export default function PostDetailPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('게시글 삭제에 실패했습니다.');
-      }
-
+      await api.posts.deletePost(postId, token);
       router.push('/posts');
     } catch (err) {
-      alert(err instanceof Error ? err.message : '게시글 삭제에 실패했습니다.');
+      if (err instanceof ApiClientError) {
+        alert(err.message);
+      } else {
+        alert(err instanceof Error ? err.message : '게시글 삭제에 실패했습니다.');
+      }
     }
   };
 
