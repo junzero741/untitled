@@ -31,6 +31,19 @@ describe('PostsController', () => {
     updatedAt: new Date(),
   }
 
+  const toApiPost = (post: typeof mockPost) => ({
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    author: {
+      id: post.author.id,
+      username: post.author.username,
+    },
+    views: post.views,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+  })
+
   const mockPostsService = {
     create: jest.fn(),
     findById: jest.fn(),
@@ -67,8 +80,7 @@ describe('PostsController', () => {
         body.title,
         body.content,
       )
-      expect(result.message).toBe('Post created successfully')
-      expect(result.post).toEqual(mockPost)
+      expect(result).toEqual(toApiPost(mockPost))
     })
 
     it('should throw BadRequestException when title or content is missing', async () => {
@@ -98,8 +110,7 @@ describe('PostsController', () => {
       const result = await controller.findAll(page, limit)
 
       expect(mockPostsService.findAll).toHaveBeenCalledWith(1, 10)
-      expect(result.message).toBe('Posts retrieved successfully')
-      expect(result.data).toEqual([mockPost])
+      expect(result.posts).toEqual([toApiPost(mockPost)])
     })
   })
 
@@ -110,8 +121,7 @@ describe('PostsController', () => {
       const result = await controller.findOne(mockPost.id)
 
       expect(mockPostsService.findById).toHaveBeenCalledWith(mockPost.id)
-      expect(result.message).toBe('Post retrieved successfully')
-      expect(result.post).toEqual(mockPost)
+      expect(result).toEqual(toApiPost(mockPost))
     })
 
     it('should throw NotFoundException when post not found', async () => {
@@ -141,8 +151,7 @@ describe('PostsController', () => {
       const result = await controller.findByAuthor(authorId, page, limit)
 
       expect(mockPostsService.findByAuthorId).toHaveBeenCalledWith(authorId, 1, 10)
-      expect(result.message).toBe('Posts retrieved successfully')
-      expect(result.data).toEqual([mockPost])
+      expect(result.posts).toEqual([toApiPost(mockPost)])
     })
   })
 
@@ -162,8 +171,7 @@ describe('PostsController', () => {
         body.title,
         body.content,
       )
-      expect(result.message).toBe('Post updated successfully')
-      expect(result.post).toEqual(updatedPost)
+      expect(result).toEqual(toApiPost(updatedPost))
     })
 
     it('should support partial updates with only title', async () => {
@@ -181,8 +189,7 @@ describe('PostsController', () => {
         body.title,
         undefined,
       )
-      expect(result.message).toBe('Post updated successfully')
-      expect(result.post).toEqual(updatedPost)
+      expect(result).toEqual(toApiPost(updatedPost))
     })
 
     it('should throw BadRequestException when no fields provided', async () => {

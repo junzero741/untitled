@@ -12,16 +12,40 @@ import {
   NotFoundException,
   UseGuards,
   Request,
-  ForbiddenException,
 } from '@nestjs/common'
 import { PostsService } from './posts.service'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { Post as PostEntity } from '../../entities/post.entity'
 
 interface AuthenticatedRequest {
   user: {
     sub: string
     email: string
     username: string
+  }
+}
+
+interface ApiAuthor {
+  id: string
+  username: string
+}
+
+const toIsoString = (value: Date | string): string =>
+  value instanceof Date ? value.toISOString() : value
+
+const toApiPost = (post: PostEntity, fallbackAuthor?: ApiAuthor) => {
+  const author = post.author
+    ? { id: post.author.id, username: post.author.username }
+    : fallbackAuthor
+
+  return {
+    id: post.id,
+    title: post.title,
+    content: post.content,
+    author: author ?? { id: post.authorId, username: '알 수 없음' },
+    views: post.views,
+    createdAt: toIsoString(post.createdAt),
+    updatedAt: toIsoString(post.updatedAt),
   }
 }
 
@@ -52,10 +76,7 @@ export class PostsController {
       content,
     )
 
-    return {
-      message: 'Post created successfully',
-      post,
-    }
+    return toApiPost(post, { id: req.user.sub, username: req.user.username })
   }
 
   /**
@@ -72,8 +93,11 @@ export class PostsController {
     const result = await this.postsService.findAll(pageNum, limitNum)
 
     return {
-      message: 'Posts retrieved successfully',
-      ...result,
+      posts: result.data.map((post) => toApiPost(post)),
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     }
   }
 
@@ -88,10 +112,7 @@ export class PostsController {
       throw new NotFoundException('Post not found')
     }
 
-    return {
-      message: 'Post retrieved successfully',
-      post,
-    }
+    return toApiPost(post)
   }
 
   /**
@@ -113,8 +134,11 @@ export class PostsController {
     )
 
     return {
-      message: 'Posts retrieved successfully',
-      ...result,
+      posts: result.data.map((post) => toApiPost(post)),
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     }
   }
 
@@ -140,10 +164,7 @@ export class PostsController {
       body.content,
     )
 
-    return {
-      message: 'Post updated successfully',
-      post,
-    }
+    return toApiPost(post, { id: req.user.sub, username: req.user.username })
   }
 
   /**
