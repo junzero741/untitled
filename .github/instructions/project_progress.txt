@@ -115,6 +115,20 @@
     - JwtStrategy에서 req.user에 주입되는 필드명을 sub로 통일
     - JWT 전략 단위 테스트 추가
 
+• [완료] 프로덕션 배포 환경 구성
+  - Backend 프로덕션 Dockerfile 작성 (멀티스테이지 빌드)
+  - Frontend 프로덕션 Dockerfile 작성 (멀티스테이지 빌드)
+  - docker-compose.prod.yml 작성 (PostgreSQL, Backend, Frontend 통합)
+  - .dockerignore 파일 작성 (빌드 최적화)
+  - 프로덕션 환경 변수 예시 파일 (.env.production.example)
+  - 자동 배포 스크립트 (deploy.sh)
+  - 상세 배포 가이드 문서 (DEPLOYMENT.md)
+    - 환경 설정 가이드
+    - 배포 단계별 설명
+    - 서비스 관리 방법
+    - 클라우드 배포 가이드 (AWS, DigitalOcean)
+    - 트러블슈팅 및 모니터링 가이드
+
 • [대기] 추가 기능 개선
 
 4. 이슈 및 장애물
