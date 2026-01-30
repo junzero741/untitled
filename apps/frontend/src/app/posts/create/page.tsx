@@ -8,7 +8,7 @@ import { api, ApiClientError } from '@/lib/api';
 
 export default function CreatePostPage() {
   const router = useRouter();
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -20,6 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    return { userId: payload.sub, email: payload.email, username: payload.username }
+    // Passport는 validate 반환 값을 req.user로 주입하므로, 컨트롤러에서 사용하는 필드명과 맞춥니다.
+    return { sub: payload.sub, email: payload.email, username: payload.username }
   }
 }
